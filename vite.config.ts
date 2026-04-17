@@ -2,11 +2,10 @@ import path from "path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
-// https://vite.dev/config/
 export default defineConfig({
-  base: '/',
+  base: "/itachi-re.github.io/",
 
-  plugins: [react()],          production
+  plugins: [react()],
 
                             resolve: {
                               alias: {
