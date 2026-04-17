@@ -3,8 +3,7 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "/itachi-re.github.io/",
-
+  base: './',
   plugins: [react()],
 
                             resolve: {
