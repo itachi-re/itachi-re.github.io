@@ -24,38 +24,49 @@ const languages = [
 export function Skills() {
   const sectionRef = useRef<HTMLElement>(null);
   const [animatedLevels, setAnimatedLevels] = useState<number[]>(skills.map(() => 0));
-  const [hasAnimated, setHasAnimated] = useState(false);
+  // A ref (not state) so the observer is created once and never re-created.
+  const hasAnimated = useRef(false);
 
   useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && !hasAnimated) {
-            entry.target.classList.add('visible');
-            
-            // Animate skill bars
+          if (!entry.isIntersecting) return;
+
+          // Always reveal the element that scrolled into view.
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+
+          // Animate the skill bars only once.
+          if (!hasAnimated.current) {
+            hasAnimated.current = true;
             skills.forEach((skill, index) => {
-              setTimeout(() => {
-                setAnimatedLevels((prev) => {
-                  const newLevels = [...prev];
-                  newLevels[index] = skill.level;
-                  return newLevels;
-                });
-              }, index * 150);
+              timers.push(
+                setTimeout(() => {
+                  setAnimatedLevels((prev) => {
+                    const next = [...prev];
+                    next[index] = skill.level;
+                    return next;
+                  });
+                }, index * 150)
+              );
             });
-            
-            setHasAnimated(true);
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.1 }
     );
 
     const elements = sectionRef.current?.querySelectorAll('.observe');
     elements?.forEach((el) => observer.observe(el));
 
-    return () => observer.disconnect();
-  }, [hasAnimated]);
+    return () => {
+      observer.disconnect();
+      timers.forEach(clearTimeout);
+    };
+  }, []);
 
   const getProgressBar = (level: number) => {
     const filled = Math.round(level / 10);
