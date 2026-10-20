@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import { Zap, Eye, FileText, ArrowDown, X } from 'lucide-react';
+import { useReveal } from './useMotion';
 
 const principles = [
   {
@@ -24,101 +24,77 @@ const principles = [
   },
 ];
 
+// Plain strings; the code-style quotes and trailing comma are added when rendering.
 const rejects = [
-  '"cargo-cult configuration"',
-  '"tools you can\'t explain"',
-  '"complexity that serves the author, not the reader"',
-  '"giving up before reading the source"',
+  'cargo-cult configuration',
+  "tools you can't explain",
+  'complexity that serves the author, not the reader',
+  'giving up before reading the source',
 ];
 
 export function Philosophy() {
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
-    );
-
-    const elements = sectionRef.current?.querySelectorAll('.observe');
-    elements?.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, []);
+  const sectionRef = useReveal<HTMLElement>();
 
   return (
     <section
       id="philosophy"
       ref={sectionRef}
+      aria-labelledby="philosophy-heading"
       className="py-24 px-6 relative"
       style={{ zIndex: 1 }}
     >
       <div className="max-w-5xl mx-auto">
         <div className="observe">
-          <h2 className="section-head">
+          <h2 id="philosophy-heading" className="section-head">
             <span className="text-hacker-blue">▸</span> cat{' '}
             <span className="gradient-text">/proc/philosophy</span>
           </h2>
           <p className="section-sub">$ python3 philosophy.py — runtime beliefs (read-only)</p>
         </div>
 
-        {/* Principles Grid */}
-        <div className="grid sm:grid-cols-2 gap-5 mb-5">
-          {principles.map((principle, index) => (
-            <div
-              key={principle.title}
+        <ul className="grid sm:grid-cols-2 gap-5 mb-5">
+          {principles.map(({ icon: Icon, title, description }, index) => (
+            <li
+              key={title}
               className="liquid-glass philosophy-card observe group"
               style={{ transitionDelay: `${index * 100}ms` }}
             >
               <div className="flex items-center gap-3 mb-3">
-                <principle.icon
+                <Icon
                   size={22}
-                  className="text-hacker-gold group-hover:rotate-[360deg] transition-transform duration-700"
+                  aria-hidden="true"
+                  className="text-hacker-gold motion-safe:group-hover:rotate-[360deg] transition-transform duration-700"
                 />
-                <span className="text-hacker-gold text-sm font-mono">
-                  "{principle.title}"
-                </span>
+                <span className="text-hacker-gold text-sm font-mono">{`"${title}"`}</span>
               </div>
-              <p className="text-sm leading-relaxed text-hacker-text/90">
-                {principle.description}
-              </p>
-            </div>
+              <p className="text-sm leading-relaxed text-hacker-text/90">{description}</p>
+            </li>
           ))}
-        </div>
+        </ul>
 
-        {/* Rejects Section */}
         <div className="liquid-glass p-6 mb-5 observe">
-          <div className="text-hacker-danger text-xs mb-4 font-mono">
-            /* REJECTS = [
-          </div>
-          <div className="space-y-2 pl-2">
-            {rejects.map((reject, index) => (
-              <div key={index} className="reject-item">
-                <X size={14} className="text-hacker-danger flex-shrink-0" />
-                <span>{reject},</span>
-              </div>
+          <div className="text-hacker-danger text-xs mb-4 font-mono">/* REJECTS = [</div>
+          <ul className="space-y-2 pl-2">
+            {rejects.map((reject) => (
+              <li key={reject} className="reject-item">
+                <X size={14} className="text-hacker-danger flex-shrink-0" aria-hidden="true" />
+                <span>{`"${reject}",`}</span>
+              </li>
             ))}
-          </div>
-          <div className="text-hacker-danger text-xs mt-4 font-mono">] */</div>
+          </ul>
+          <div className="text-hacker-danger text-xs mt-4 font-mono">{']  */'}</div>
         </div>
 
-        {/* Quote Block */}
-        <div className="liquid-glass quote-block observe relative overflow-hidden">
-          <div className="shimmer-line absolute top-0 left-0 right-0" />
+        <figure className="liquid-glass quote-block observe relative overflow-hidden">
+          <div className="shimmer-line absolute top-0 left-0 right-0" aria-hidden="true" />
           <blockquote className="font-display text-xl sm:text-2xl italic text-hacker-text leading-relaxed font-semibold mb-3">
-            "The quieter you become, the more you can hear."
+            “The quieter you become, the more you can hear.”
           </blockquote>
-          <cite className="text-hacker-muted text-sm font-mono not-italic">
-            — /proc/philosophy
-          </cite>
-          <div className="shimmer-line absolute bottom-0 left-0 right-0" />
-        </div>
+          <figcaption>
+            <cite className="text-hacker-muted text-sm font-mono not-italic">— /proc/philosophy</cite>
+          </figcaption>
+          <div className="shimmer-line absolute bottom-0 left-0 right-0" aria-hidden="true" />
+        </figure>
       </div>
     </section>
   );
