@@ -15,7 +15,7 @@ const socialLinks = [
 export function Contact() {
   const sectionRef = useReveal<HTMLElement>();
   const [copied, setCopied] = useState(false);
-  const resetTimer = useRef<number>();
+  const resetTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => () => window.clearTimeout(resetTimer.current), []);
 
