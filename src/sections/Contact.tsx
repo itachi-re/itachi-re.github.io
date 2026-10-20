@@ -8,6 +8,7 @@ const socialLinks = [
   { name: 'GitHub', handle: 'itachi-re', href: 'https://github.com/itachi-re', abbr: 'GH' },
   { name: 'GitLab', handle: 'itachi_re', href: 'https://gitlab.com/itachi_re', abbr: 'GL' },
   { name: 'Codeberg', handle: 'itachi-re', href: 'https://codeberg.org/itachi-re', abbr: 'CB' },
+  { name: 'OBS', handle: 'home:itachi_re', href: 'https://build.opensuse.org/project/show/home:itachi_re', abbr: 'OBS' },
   { name: 'Telegram', handle: '@itachi_re', href: 'https://t.me/itachi_re', abbr: 'TG' },
   { name: 'Email', handle: EMAIL, href: `mailto:${EMAIL}`, abbr: '@' },
 ];

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Github, Send, FolderOpen } from 'lucide-react';
+import { Github, Send, FolderOpen, Package } from 'lucide-react';
 import { prefersReducedMotion } from './useMotion';
+import { shortcutLabel } from '@/lib/palette';
+import { links } from '@/data/site';
 
 const ASCII_ART = `
 ██╗████████╗ █████╗  ██████╗██╗  ██╗██╗
@@ -211,7 +213,17 @@ export function Hero() {
             Telegram
             <span className="sr-only"> (opens in new tab)</span>
           </a>
+          <a href={links.obs} target="_blank" rel="noreferrer" className="btn-ghost">
+            <Package size={16} />
+            OBS
+            <span className="sr-only"> (opens in new tab)</span>
+          </a>
         </div>
+
+        <p className="mt-6 text-xs font-mono text-hacker-muted">
+          tip: press <span className="kbd-hint">{shortcutLabel}</span> or <span className="kbd-hint">/</span> to jump to
+          any repo, section or link
+        </p>
       </div>
     </section>
   );

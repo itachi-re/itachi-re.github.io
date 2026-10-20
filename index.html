@@ -1,12 +1,106 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>itachi_re - Systems Enthusiast</title>
+
+    <title>itachi_re — Systems Enthusiast · OBS Packager</title>
+    <meta
+      name="description"
+      content="itachi_re: systems enthusiast who packages 100+ RPMs on the openSUSE Build Service, writes practical Linux and OpenWrt guides, and tinkers with low-level Linux."
+    />
+    <meta name="author" content="itachi_re" />
+    <link rel="canonical" href="https://itachi-re.github.io/" />
+
+    <!-- Theme: set before first paint so there is no flash; React takes over afterwards -->
+    <meta name="theme-color" content="#0d1117" />
+    <meta name="color-scheme" content="dark light" />
+    <style>
+      html { background: #0d1117; }
+      html[data-theme='light'] { background: #f6f8fa; }
+    </style>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('itachi-theme');
+          if (t === 'light' || t === 'dark') {
+            document.documentElement.setAttribute('data-theme', t);
+            document.documentElement.style.colorScheme = t;
+            if (t === 'light') {
+              document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f6f8fa');
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- Icons -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="itachi_re" />
+    <meta property="og:title" content="itachi_re — Systems Enthusiast · OBS Packager" />
+    <meta
+      property="og:description"
+      content="100+ auto-updating RPM packages on OBS, practical Linux and OpenWrt guides, and a terminal-first workflow."
+    />
+    <meta property="og:url" content="https://itachi-re.github.io/" />
+    <meta property="og:image" content="https://itachi-re.github.io/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="itachi_re — systems enthusiast, low-level explorer, terminal dweller" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="itachi_re — Systems Enthusiast · OBS Packager" />
+    <meta
+      name="twitter:description"
+      content="100+ auto-updating RPM packages on OBS, practical Linux and OpenWrt guides, and a terminal-first workflow."
+    />
+    <meta name="twitter:image" content="https://itachi-re.github.io/og-image.png" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "itachi",
+        "alternateName": "itachi_re",
+        "url": "https://itachi-re.github.io/",
+        "jobTitle": "Systems enthusiast",
+        "description": "Packages software on the openSUSE Build Service and writes practical Linux and OpenWrt documentation.",
+        "sameAs": [
+          "https://github.com/itachi-re",
+          "https://gitlab.com/itachi_re",
+          "https://codeberg.org/itachi-re",
+          "https://build.opensuse.org/project/show/home:itachi_re",
+          "https://t.me/itachi_re"
+        ]
+      }
+    </script>
+
+    <!-- Fonts (moved out of a render-blocking CSS @import) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap"
+    />
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <main style="font-family: monospace; max-width: 40rem; margin: 4rem auto; padding: 0 1.5rem; color: #8b949e">
+        <h1 style="color: #58a6ff">itachi_re</h1>
+        <p>Systems enthusiast. I package software on the openSUSE Build Service and write practical Linux guides.</p>
+        <p>
+          This site needs JavaScript. The work lives here:
+          <a href="https://github.com/itachi-re" style="color: #58a6ff">GitHub</a> ·
+          <a href="https://build.opensuse.org/project/show/home:itachi_re" style="color: #58a6ff">OBS</a> ·
+          <a href="https://gitlab.com/itachi_re" style="color: #58a6ff">GitLab</a> ·
+          <a href="https://codeberg.org/itachi-re" style="color: #58a6ff">Codeberg</a>
+        </p>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

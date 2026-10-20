@@ -24,8 +24,9 @@ type GoalStatus = 'in progress' | 'next' | 'planned';
 
 const goals: { title: string; status: GoalStatus; detail: string }[] = [
   { title: 'Kernel packaging', status: 'in progress', detail: 'Maintain optimized kernel builds on OBS' },
-  { title: 'Shell scripting', status: 'next', detail: 'Automate build and release tasks' },
-  { title: 'C fundamentals', status: 'planned', detail: 'Understand what runs under the hood' },
+  { title: 'Shell scripting', status: 'in progress', detail: 'Automate build and release tasks' },
+  { title: 'C fundamentals', status: 'in progress', detail: 'Understand what runs under the hood' },
+  { title: 'Web security & CTFs', status: 'next', detail: 'Work through learn-web-hacking and picoCTF' },
 ];
 
 const statusColor: Record<GoalStatus, string> = {
@@ -49,7 +50,7 @@ function SkillCard({ skill, index, active }: { skill: Skill; index: number; acti
       </div>
       <div
         className="h-1.5 rounded-full overflow-hidden"
-        style={{ background: 'rgba(255,255,255,0.08)' }}
+        style={{ background: 'rgb(var(--hk-text) / 0.1)' }}
         role="progressbar"
         aria-label={skill.name}
         aria-valuemin={0}
@@ -60,7 +61,7 @@ function SkillCard({ skill, index, active }: { skill: Skill; index: number; acti
           className="h-full rounded-full transition-[width] duration-1000 ease-out motion-reduce:transition-none"
           style={{
             width: active ? `${skill.level}%` : '0%',
-            background: 'linear-gradient(90deg, #58a6ff, #3fb950)',
+            background: 'linear-gradient(90deg, rgb(var(--hk-blue)), rgb(var(--hk-success)))',
             transitionDelay: `${delay + 200}ms`,
           }}
         />

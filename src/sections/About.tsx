@@ -1,4 +1,4 @@
-import { Cpu, Code2, Lock, Network, BarChart3 } from 'lucide-react';
+import { Cpu, Code2, Lock, Network, BarChart3, Package, Router, Settings2 } from 'lucide-react';
 import { useReveal } from './useMotion';
 
 const identity: { key: string; value: string; comment?: string }[] = [
@@ -14,7 +14,10 @@ const dailyDrivers = [
   { name: 'Kali Linux', active: true },
 ];
 
-const tools = ['Hyprland', 'Sway', 'Neovim', 'Ghostty', 'Zsh', 'rEFInd', 'Btrfs', 'Pywal'];
+const tools = [
+  'KDE Plasma', 'Wayland', 'Zsh', 'Starship', 'Neovim', 'GNU Stow', 'Pywal',
+  'Btrfs', 'rEFInd', 'Hyprland', 'Sway', 'Ghostty',
+];
 
 const exploring = [
   { icon: Cpu, label: 'wayland_compositor_internals' },
@@ -22,6 +25,9 @@ const exploring = [
   { icon: Network, label: 'network_protocol_analysis' },
   { icon: Code2, label: 'c_systems_programming' },
   { icon: BarChart3, label: 'low_level_performance' },
+  { icon: Package, label: 'rpm_packaging_at_scale' },
+  { icon: Router, label: 'openwrt_sqm_wireguard' },
+  { icon: Settings2, label: 'kernel_packaging_on_obs' },
 ];
 
 export function About() {
@@ -42,6 +48,17 @@ export function About() {
             <span className="gradient-text">identity</span>
           </h2>
           <p className="section-sub">$ cat ./identity.c — loading core modules...</p>
+        </div>
+
+        {/* Bio */}
+        <div className="liquid-glass p-6 mb-5 observe">
+          <div className="text-hacker-comment text-xs mb-4 font-mono">/* man itachi */</div>
+          <p className="text-sm leading-relaxed text-hacker-text/90 max-w-3xl">
+            I package and automate. Most of my time goes into the openSUSE Build Service: 100+ packages in{' '}
+            <span className="text-hacker-blue">home:itachi_re</span> that rebuild themselves whenever upstream ships.
+            The rest goes into Linux and OpenWrt field notes written so the next person doesn&rsquo;t have to dig through
+            forum threads, a handful of small tools, and my Textile Engineering notes, which live in Git too.
+          </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-5 mb-5">
