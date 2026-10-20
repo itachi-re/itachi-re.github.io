@@ -4,6 +4,7 @@ import { Footer } from './components/Footer';
 import { Hero } from './sections/Hero';
 import { About } from './sections/About';
 import { Skills } from './sections/Skills';
+import { LearningGoals } from './sections/LearningGoals';
 import { Projects } from './sections/Projects';
 import { Philosophy } from './sections/Philosophy';
 import { Contact } from './sections/Contact';
@@ -22,6 +23,7 @@ function App() {
         <Hero />
         <About />
         <Skills />
+        <LearningGoals />
         <Projects />
         <Philosophy />
         <Contact />
