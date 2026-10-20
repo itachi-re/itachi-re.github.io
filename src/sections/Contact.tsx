@@ -32,8 +32,8 @@ const socialLinks = [
   },
   {
     name: 'Email',
-    handle: 'xanbenson99@gmail.com',
-    href: 'mailto:xanbenson99@gmail.com',
+    handle: 'itachi_re@protonmail.com',
+    href: 'mailto:itachi_re@protonmail.com',
     icon: Mail,
     abbr: '@',
   },
