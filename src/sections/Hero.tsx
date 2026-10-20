@@ -1,5 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Github, Send, FolderOpen } from 'lucide-react';
+import { prefersReducedMotion } from './useMotion';
 
 const ASCII_ART = `
 ██╗████████╗ █████╗  ██████╗██╗  ██╗██╗
@@ -9,85 +10,138 @@ const ASCII_ART = `
 ██║   ██║   ██║  ██║╚██████╗██║  ██║██║
 ╚═╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝`;
 
-const TYPING_TEXT = "systems enthusiast · low-level explorer · terminal dweller";
+const TYPING_TEXT = 'systems enthusiast · low-level explorer · terminal dweller';
+const TYPING_SPEED_MS = 45;
+const CURSOR_BLINK_MS = 530;
+
+/**
+ * Isolated so the per-character and cursor re-renders don't touch the rest of
+ * the hero. Screen readers get the full text once instead of a partial string.
+ */
+function Typewriter({ text }: { text: string }) {
+  const [length, setLength] = useState(() => (prefersReducedMotion() ? text.length : 0));
+  const [cursorOn, setCursorOn] = useState(true);
+
+  useEffect(() => {
+    if (length >= text.length) return;
+    const id = window.setTimeout(() => setLength((l) => l + 1), TYPING_SPEED_MS);
+    return () => window.clearTimeout(id);
+  }, [length, text]);
+
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    const id = window.setInterval(() => setCursorOn((on) => !on), CURSOR_BLINK_MS);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return (
+    <>
+      <span aria-hidden="true">{text.slice(0, length)}</span>
+      <span className="sr-only">{text}</span>
+      <span
+        aria-hidden="true"
+        className={`inline-block w-2 h-4 bg-hacker-blue ml-1 align-middle ${
+          cursorOn ? 'opacity-100' : 'opacity-0'
+        }`}
+      />
+    </>
+  );
+}
 
 export function Hero() {
-  const [typedText, setTypedText] = useState('');
-  const [showCursor, setShowCursor] = useState(true);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const asciiRef = useRef<HTMLDivElement>(null);
+  const terminalRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
 
+  // Parallax: pointer devices only, skipped for reduced motion, batched with
+  // requestAnimationFrame, and paused while the hero is off screen.
   useEffect(() => {
-    let index = 0;
-    const typingInterval = setInterval(() => {
-      if (index <= TYPING_TEXT.length) {
-        setTypedText(TYPING_TEXT.slice(0, index));
-        index++;
-      } else {
-        clearInterval(typingInterval);
-      }
-    }, 45);
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (prefersReducedMotion() || !canHover) return;
 
-    return () => clearInterval(typingInterval);
-  }, []);
+    const layers = [
+      { el: asciiRef.current, depth: -10 },
+      { el: terminalRef.current, depth: -5 },
+      { el: ctaRef.current, depth: -8 },
+    ];
 
-  useEffect(() => {
-    const cursorInterval = setInterval(() => {
-      setShowCursor(prev => !prev);
-    }, 530);
+    let x = 0;
+    let y = 0;
+    let frame = 0;
+    let heroVisible = true;
 
-    return () => clearInterval(cursorInterval);
-  }, []);
-
-  // Parallax effect on mouse move
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const { clientX, clientY } = e;
-      const { innerWidth, innerHeight } = window;
-      
-      const xPercent = (clientX / innerWidth - 0.5) * 2;
-      const yPercent = (clientY / innerHeight - 0.5) * 2;
-
-      const asciiEl = container.querySelector('.ascii-container') as HTMLElement;
-      const terminalEl = container.querySelector('.terminal-container') as HTMLElement;
-      const ctaEl = container.querySelector('.cta-container') as HTMLElement;
-
-      if (asciiEl) {
-        asciiEl.style.transform = `translate(${xPercent * -10}px, ${yPercent * -10}px)`;
-      }
-      if (terminalEl) {
-        terminalEl.style.transform = `translate(${xPercent * -5}px, ${yPercent * -5}px)`;
-      }
-      if (ctaEl) {
-        ctaEl.style.transform = `translate(${xPercent * -8}px, ${yPercent * -8}px)`;
+    const apply = () => {
+      frame = 0;
+      for (const { el, depth } of layers) {
+        if (el) el.style.transform = `translate3d(${x * depth}px, ${y * depth}px, 0)`;
       }
     };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(apply);
+    };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    const onMove = (e: MouseEvent) => {
+      if (!heroVisible) return;
+      x = (e.clientX / window.innerWidth - 0.5) * 2;
+      y = (e.clientY / window.innerHeight - 0.5) * 2;
+      schedule();
+    };
+    const onLeave = () => {
+      x = 0;
+      y = 0;
+      schedule();
+    };
+
+    const visibility = new IntersectionObserver(([entry]) => {
+      heroVisible = entry.isIntersecting;
+    });
+    if (sectionRef.current) visibility.observe(sectionRef.current);
+
+    window.addEventListener('mousemove', onMove, { passive: true });
+    document.documentElement.addEventListener('mouseleave', onLeave);
+
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      document.documentElement.removeEventListener('mouseleave', onLeave);
+      visibility.disconnect();
+      cancelAnimationFrame(frame);
+      for (const { el } of layers) if (el) el.style.transform = '';
+    };
   }, []);
 
   return (
     <section
       id="home"
+      ref={sectionRef}
       className="min-h-screen flex items-center justify-center relative px-6 py-20"
       style={{ zIndex: 1 }}
     >
-      <div ref={containerRef} className="max-w-4xl w-full">
+      <div className="max-w-4xl w-full">
+        <h1 className="sr-only">itachi — systems enthusiast, low-level explorer, terminal dweller</h1>
+
         {/* ASCII Art */}
-        <div className="ascii-container liquid-glass p-6 mb-6 relative overflow-hidden animate-fade-up transition-transform duration-200 ease-out">
-          <div className="shimmer-line absolute top-0 left-0 right-0" />
-          <pre className="ascii-art text-hacker-blue text-[10px] sm:text-xs md:text-sm leading-tight font-mono ascii-glow whitespace-pre-wrap text-center">
+        <div
+          ref={asciiRef}
+          className="ascii-container liquid-glass p-6 mb-6 relative overflow-hidden animate-fade-up transition-transform duration-200 ease-out"
+        >
+          <div className="shimmer-line absolute top-0 left-0 right-0" aria-hidden="true" />
+          <pre
+            role="img"
+            aria-label="ITACHI"
+            className="ascii-art text-hacker-blue text-[10px] sm:text-xs md:text-sm leading-tight font-mono ascii-glow whitespace-pre overflow-x-auto text-center"
+          >
             {ASCII_ART}
           </pre>
-          <div className="shimmer-line absolute bottom-0 left-0 right-0" />
+          <div className="shimmer-line absolute bottom-0 left-0 right-0" aria-hidden="true" />
         </div>
 
         {/* Terminal Window */}
-        <div className="terminal-container terminal mb-8 animate-fade-up delay-200 transition-transform duration-200 ease-out">
-          <div className="terminal-bar">
+        <div
+          ref={terminalRef}
+          className="terminal-container terminal mb-8 animate-fade-up delay-200 transition-transform duration-200 ease-out"
+        >
+          <div className="terminal-bar" aria-hidden="true">
             <span className="terminal-dot bg-red-500" />
             <span className="terminal-dot bg-yellow-500" />
             <span className="terminal-dot bg-green-500" />
@@ -96,26 +150,19 @@ export function Hero() {
             </span>
           </div>
           <div className="terminal-body">
-            {/* Command 1 */}
             <div className="mb-4">
               <div className="flex items-center gap-2">
-                <span className="prompt">❯</span>
+                <span className="prompt" aria-hidden="true">❯</span>
                 <span className="command">whoami</span>
               </div>
               <div className="output pl-5 mt-1 text-sm">
-                itachi — {typedText}
-                <span
-                  className={`inline-block w-2 h-4 bg-hacker-blue ml-1 align-middle ${
-                    showCursor ? 'opacity-100' : 'opacity-0'
-                  }`}
-                />
+                itachi — <Typewriter text={TYPING_TEXT} />
               </div>
             </div>
 
-            {/* Command 2 */}
             <div className="mb-4">
               <div className="flex items-center gap-2">
-                <span className="prompt">❯</span>
+                <span className="prompt" aria-hidden="true">❯</span>
                 <span className="command">uptime</span>
               </div>
               <div className="output-muted pl-5 mt-1 text-sm">
@@ -123,10 +170,9 @@ export function Hero() {
               </div>
             </div>
 
-            {/* Command 3 */}
             <div>
               <div className="flex items-center gap-2">
-                <span className="prompt">❯</span>
+                <span className="prompt" aria-hidden="true">❯</span>
                 <span className="command">uname -a</span>
               </div>
               <div className="output-muted pl-5 mt-1 text-sm">
@@ -137,7 +183,10 @@ export function Hero() {
         </div>
 
         {/* CTA Buttons */}
-        <div className="cta-container flex flex-wrap gap-4 animate-fade-up delay-400 transition-transform duration-200 ease-out">
+        <div
+          ref={ctaRef}
+          className="cta-container flex flex-wrap gap-4 animate-fade-up delay-400 transition-transform duration-200 ease-out"
+        >
           <a href="#projects" className="btn-primary">
             <FolderOpen size={16} />
             ls ./projects
@@ -150,6 +199,7 @@ export function Hero() {
           >
             <Github size={16} />
             GitHub
+            <span className="sr-only"> (opens in new tab)</span>
           </a>
           <a
             href="https://t.me/itachi_re"
@@ -159,6 +209,7 @@ export function Hero() {
           >
             <Send size={16} />
             Telegram
+            <span className="sr-only"> (opens in new tab)</span>
           </a>
         </div>
       </div>
